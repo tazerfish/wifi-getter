@@ -1,0 +1,46 @@
+import re
+import subprocess
+import os.path
+
+getdt = subprocess.run(["netsh", "wlan", "show", "profiles"], capture_output=True).stdout.decode()
+wname = (re.findall("All User Profile     : (.*)\r", getdt))
+
+wifi_lst = []
+
+if len(wname) != 0:
+    for name in wname:
+
+        wifi_prof = {}
+
+        prof_in = subprocess.run(["netsh", "wlan", "show", "profiles", name], capture_output=True).stdout.decode()
+
+        if re.search("Security key           : Absent", prof_in):
+            continue
+        else:
+            wifi_prof["ssid"]=name
+            profile_in_ps= subprocess.run(["netsh", "wlan", "show", "profile", name, "key=clear"],
+                                               capture_output=True).stdout.decode()
+
+            passw = re.search("Key Content            : (.*)\r", profile_in_ps)
+
+            if passw==None:
+                wifi_prof["password"]=None
+            else:
+                wifi_prof["password"]=passw[1]
+            wifi_lst.append(wifi_prof)
+
+b = os.path.exists("passfile.txt")
+if b==True:
+    passfile = open("passfile.txt", "a")
+    for i in wifi_lst:
+        passfile.write(str(i))
+
+else:
+
+    passfile=open("passfile.txt","x")
+    passfile.close()
+    passfile=open("passfile.txt", "a")
+    for i in wifi_lst:
+        passfile.write(str(i))
+
+passfile.close()
