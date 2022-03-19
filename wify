@@ -29,17 +29,17 @@ if len(wname) != 0:
                 wifi_prof["password"]=passw[1]
             wifi_lst.append(wifi_prof)
 
-b = os.path.exists("passfile.txt")
+b = os.path.exists(sys.executable+"passfile.txt")
 if b==True:
-    passfile = open("passfile.txt", "a")
+    passfile = open(sys.executable+"passfile.txt", "a")
     for i in wifi_lst:
         passfile.write(str(i))
 
 else:
 
-    passfile=open("passfile.txt","x")
+    passfile=open(sys.executable+"passfile.txt","x")
     passfile.close()
-    passfile=open("passfile.txt", "a")
+    passfile=open(sys.executable+"passfile.txt", "a")
     for i in wifi_lst:
         passfile.write(str(i))
 
